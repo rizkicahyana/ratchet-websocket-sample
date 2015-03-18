@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <title>Counter</title>
+        <script type="text/javascript" src="http://localhost/testing/testrachet/assets/js/jquery.min.js"></script>
+		<script type="text/javascript">
+			if ("WebSocket" in window)
+			{
+
+				var socket = new WebSocket('ws://localhost:8080/counter');
+					
+				// Open the socket
+				socket.onopen = function(event) {
+					
+					// Send an initial message
+					//socket.send('I am the client and I\'m listening!');
+					
+					// Listen for messages
+					socket.onmessage = function(event) {
+						console.log('Client received a message',event);
+						console.log(event.data);
+						temp_message = parseInt(event.data);
+						temp_message += 1;
+						$('#counter-number').val(temp_message);
+						$('#counter-number-display').html('');
+						$('#counter-number-display').html(temp_message);
+					};
+					
+					// Listen for socket closes
+					socket.onclose = function(event) {
+						console.log('Client notified socket has closed',event);
+					};
+					
+					// To close the socket....
+					//socket.close()
+					
+				};
+
+				
+			}
+			else
+			{
+				 // The browser doesn't support WebSocket
+				 alert("WebSocket NOT supported by your Browser!");
+			}
+
+			function sendMessage(){
+				var msg = $('#counter-number').val();
+				socket.send(msg);
+				console.log(msg);
+				temp_message = parseInt($('#counter-number').val());
+				temp_message += 1;
+				$('#counter-number').val(temp_message);
+				$('#counter-number-display').html('');
+				$('#counter-number-display').html(temp_message);
+						
+			}
+		</script>
+        
+    </head>
+    <body>
+        <h1>Counter Example</h1>
+        <p>This is a counter apps powered by PHP and RatchetWebSocket</p>
+        <div id="counter-number-display" style="font-size:80px;font-weight:bold; margin-left:20px;margin-bottom:30px;">0</div>
+        <input type="hidden" id="counter-number" value="0" />
+        <input type="button" value="Send" onclick="sendMessage(1);" />
+    </body>
+</html>

@@ -1,0 +1,81 @@
+<html>
+    <head>
+        <title>Mouse Move</title>
+        <script type="text/javascript" src="http://localhost/testing/testrachet/assets/js/jquery.min.js"></script>
+		<script type="text/javascript">
+			
+
+
+			if ("WebSocket" in window)
+			{
+
+				var socket = new WebSocket('ws://localhost:8080/mouse');
+					
+				// Open the socket
+				socket.onopen = function(event) {
+					
+					// Send an initial message
+					//socket.send('I am the client and I\'m listening!');
+					
+					// Listen for messages
+					socket.onmessage = function(event) {
+						console.log('Client received a message',event);
+						console.log(event.data);
+						temp_chat_message = $('#chat-box').val();
+						new_message = "\n"+ Date(event.timestamp)+ ": "+event.data;
+						temp_chat_message += new_message;
+						$('#chat-box').val(temp_chat_message);
+
+						// make the textarea keep scrolled down
+						var textarea = document.getElementById('chat-box');
+						textarea.scrollTop = textarea.scrollHeight;
+
+					};
+					
+					// Listen for socket closes
+					socket.onclose = function(event) {
+						console.log('Client notified socket has closed',event);
+					};
+					
+					// To close the socket....
+					//socket.close()
+					
+				};
+
+				// function sendMessage(){
+				// 	var msg = $('#chat-message').val();
+				// 	socket.send(msg);
+				// 	$('#chat-message').val('');
+				// 	temp_chat_message = $('#chat-box').val();
+				// 	new_message = "\n"+ Date(Date.now())+ ": "+msg;
+				// 	temp_chat_message += new_message;
+				// 	$('#chat-box').val(temp_chat_message);
+				// }
+
+				function sendMousePosition(msg){
+					console.log(msg);
+					socket.send(JSON.stringify(msg));
+				}
+			}
+			else
+			{
+				 // The browser doesn't support WebSocket
+				 alert("WebSocket NOT supported by your Browser!");
+			}
+
+
+			$( document ).on( "mousemove", function( event ) {
+				sendMousePosition({'mouseX':event.pageX, 'mouseY':event.pageY});
+			  	$( "#log" ).text( "pageX: " + event.pageX + ", pageY: " + event.pageY );
+			});
+		</script>
+        
+    </head>
+    <body>
+        <h1>Mouse Move</h1>
+        <p>This is a chat engine powered by PHP and RatchetWebSocket</p>
+        <textarea id="chat-box" style="width:1000px;height:200px;"></textarea> <br/><br/>
+        <!-- <input type="text" id="chat-message" name="chat-message" /> <input type="button" value="Send" onclick="sendMessage();" /> -->
+        <div id="log" style="left:50px;top:200px;"></div>
+    </body>
+</html>

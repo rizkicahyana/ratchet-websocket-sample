@@ -1,0 +1,120 @@
+<html>
+    <head>
+        <title>Simple Sketch</title>
+        <script type="text/javascript" src="http://localhost/testing/testrachet/assets/js/jquery.min.js"></script>
+		<script type="text/javascript">
+			
+			
+			var mousePressed = false;
+			var lastX, lastY;
+			var ctx;
+			var penColor = {'red': Math.floor(Math.random()*255), 'green':Math.floor(Math.random()*255), 'blue':Math.floor(Math.random()*255)};
+
+			if ("WebSocket" in window)
+			{
+
+				var socket = new WebSocket('ws://localhost:8080/simplesketch');
+					
+				// Open the socket
+				socket.onopen = function(event) {
+					
+					// Send an initial message
+					//socket.send('I am the client and I\'m listening!');
+					
+					// Listen for messages
+					socket.onmessage = function(event) {
+						console.log('Client received a message',event);
+						console.log(event.data);
+						msg = JSON.parse(event.data);
+						Draw(msg.mouseX, msg.mouseY, true, msg.penColor);
+					};
+					
+					// Listen for socket closes
+					socket.onclose = function(event) {
+						console.log('Client notified socket has closed',event);
+					};
+					
+					// To close the socket....
+					//socket.close()
+					
+				};
+
+				function sendMousePosition(msg){
+					console.log(msg);
+					socket.send(JSON.stringify(msg));
+				}
+			}
+			else
+			{
+				 // The browser doesn't support WebSocket
+				 alert("WebSocket NOT supported by your Browser!");
+			}
+
+			function InitThis() {
+			    ctx = document.getElementById('myCanvas').getContext("2d");
+
+			    $('#myCanvas').mousedown(function (e) {
+			        mousePressed = true;
+
+			      
+		            
+			        mouseX = e.pageX - $(this).offset().left;
+		        	mouseY = e.pageY - $(this).offset().top;
+
+		        	lastX = mouseX;
+		        	lastY = mouseY;
+
+		        	Draw(mouseX, mouseY, true, penColor);
+		        	msg = {'mouseX':mouseX, 'mouseY':mouseY, 'penColor':penColor};
+		        	console.log(msg);
+		        	sendMousePosition(msg);
+			   		
+
+			    });
+
+			    $('#myCanvas').mousemove(function (e) {
+			        if (mousePressed) {
+			        	mouseX = e.pageX - $(this).offset().left;
+			        	mouseY = e.pageY - $(this).offset().top;
+			            Draw(mouseX, mouseY, true, penColor);
+			        	msg = {'mouseX':mouseX, 'mouseY':mouseY, 'penColor':penColor};
+			        	console.log(msg);
+			        	sendMousePosition(msg);
+			        }
+			    });
+
+			    $('#myCanvas').mouseup(function (e) {
+			        mousePressed = false;
+
+			    });
+				
+				$('#myCanvas').mouseleave(function (e) {
+			        mousePressed = false;
+			    });
+			}
+
+			function Draw(x, y, isDown, pen_color) {
+			    if (isDown) {
+			        ctx.beginPath();
+			        ctx.strokeStyle = 'rgb('+pen_color.red.toString()+', '+pen_color.green.toString()+', '+pen_color.blue.toString()+')';
+			        ctx.lineWidth = 'red';
+			        ctx.lineJoin = "round";
+			        ctx.moveTo(lastX, lastY);
+			        ctx.lineTo(x, y);
+			        ctx.closePath();
+			        ctx.stroke();
+			    }
+
+			    lastX = x; lastY = y;
+			}
+		</script>
+        
+    </head>
+    <body onload="InitThis();">
+        <h1>Simple Sketch</h1>
+        <p>This is a chat engine powered by PHP and RatchetWebSocket</p>
+
+        <canvas id="myCanvas" width="800" height="300" style="border:2px solid black"></canvas>
+    
+    </body>
+</html>
