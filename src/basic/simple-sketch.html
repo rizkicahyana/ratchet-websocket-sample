@@ -17,14 +17,9 @@
 					
 				// Open the socket
 				socket.onopen = function(event) {
-					
-					// Send an initial message
-					//socket.send('I am the client and I\'m listening!');
-					
+
 					// Listen for messages
 					socket.onmessage = function(event) {
-						console.log('Client received a message',event);
-						console.log(event.data);
 						msg = JSON.parse(event.data);
 						Draw(msg.mouseX, msg.mouseY, true, msg.penColor);
 					};
@@ -33,10 +28,7 @@
 					socket.onclose = function(event) {
 						console.log('Client notified socket has closed',event);
 					};
-					
-					// To close the socket....
-					//socket.close()
-					
+
 				};
 
 				function sendMousePosition(msg){
@@ -56,8 +48,6 @@
 			    $('#myCanvas').mousedown(function (e) {
 			        mousePressed = true;
 
-			      
-		            
 			        mouseX = e.pageX - $(this).offset().left;
 		        	mouseY = e.pageY - $(this).offset().top;
 
@@ -69,7 +59,6 @@
 		        	console.log(msg);
 		        	sendMousePosition(msg);
 			   		
-
 			    });
 
 			    $('#myCanvas').mousemove(function (e) {
@@ -112,7 +101,7 @@
     </head>
     <body onload="InitThis();">
         <h1>Simple Sketch</h1>
-        <p>This is a chat engine powered by PHP and RatchetWebSocket</p>
+        <p>This is a free sketch apps powered by PHP and RatchetWebSocket</p>
 
         <canvas id="myCanvas" width="800" height="300" style="border:2px solid black"></canvas>
     

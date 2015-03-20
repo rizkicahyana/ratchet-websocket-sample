@@ -1,7 +1,7 @@
 <html>
     <head>
         <title>Chat Example</title>
-        <script type="text/javascript" src="http://localhost/testing/testrachet/assets/js/jquery.min.js"></script>
+        <script type="text/javascript" src="http://localhost/ratchet-websocket-sample/assets/js/jquery.min.js"></script>
 		<script type="text/javascript">
 			if ("WebSocket" in window)
 			{
@@ -11,13 +11,11 @@
 				// Open the socket
 				socket.onopen = function(event) {
 					
-					// Send an initial message
-					//socket.send('I am the client and I\'m listening!');
-					
 					// Listen for messages
 					socket.onmessage = function(event) {
 						console.log('Client received a message',event);
-						console.log(event.data);
+						
+						// merge the message to the chatbox
 						temp_chat_message = $('#chat-box').val();
 						new_message = "\n"+ Date(event.timestamp)+ ": "+event.data;
 						temp_chat_message += new_message;
@@ -32,15 +30,16 @@
 					socket.onclose = function(event) {
 						console.log('Client notified socket has closed',event);
 					};
-					
-					// To close the socket....
-					//socket.close()
-					
 				};
 
 				function sendMessage(){
+					
 					var msg = $('#chat-message').val();
+					
+					// send the message to the receiver
 					socket.send(msg);
+					
+					// append the message to the sender chatbox
 					$('#chat-message').val('');
 					temp_chat_message = $('#chat-box').val();
 					new_message = "\n"+ Date(Date.now())+ ": "+msg;

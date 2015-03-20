@@ -11,15 +11,15 @@
 				// Open the socket
 				socket.onopen = function(event) {
 					
-					// Send an initial message
-					//socket.send('I am the client and I\'m listening!');
 					
 					// Listen for messages
 					socket.onmessage = function(event) {
-						console.log('Client received a message',event);
-						console.log(event.data);
+						
+						// get the increment number from sender
 						temp_message = parseInt(event.data);
 						temp_message += 1;
+
+						// display the result to the counter number display
 						$('#counter-number').val(temp_message);
 						$('#counter-number-display').html('');
 						$('#counter-number-display').html(temp_message);
@@ -29,10 +29,6 @@
 					socket.onclose = function(event) {
 						console.log('Client notified socket has closed',event);
 					};
-					
-					// To close the socket....
-					//socket.close()
-					
 				};
 
 				
@@ -45,8 +41,11 @@
 
 			function sendMessage(){
 				var msg = $('#counter-number').val();
+				
+				// send the increment number to receiver
 				socket.send(msg);
-				console.log(msg);
+				
+				// update the number to the sender counter number display
 				temp_message = parseInt($('#counter-number').val());
 				temp_message += 1;
 				$('#counter-number').val(temp_message);

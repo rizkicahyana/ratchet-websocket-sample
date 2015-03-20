@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <title>Live Editor Viewer</title>
+        <script type="text/javascript" src="http://localhost/testing/testrachet/assets/js/jquery.min.js"></script>
+		<script type="text/javascript">
+			
+			if ("WebSocket" in window)
+			{
+
+				var socket = new WebSocket('ws://localhost:8080/live_editor');
+				
+				// Open the socket
+				socket.onopen = function(event) {
+					// Listen for messages
+					socket.onmessage = function(event) {
+						console.log(event.data);
+						
+						$('#live-editor-viewer').html(event.data);
+					};
+					
+					// Listen for socket closes
+					socket.onclose = function(event) {
+						alert('socket is closed..');
+					};
+					
+				};
+			}
+			else
+			{
+				 // The browser doesn't support WebSocket
+				 alert("WebSocket NOT supported by your Browser!");
+			}
+
+			
+		</script>
+        
+    </head>
+    <body>
+        <h1>Live Editor Viewer</h1>
+        <p>This is simple HTML live viewer powered by PHP and RatchetWebSocket</p>
+        <hr />
+        <div id="live-editor-viewer" style="width:1000px;height:400px;">now loading page..</div> <br/><br/>
+    </body>
+</html>

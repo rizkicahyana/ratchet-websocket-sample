@@ -19,13 +19,8 @@
 				// Open the socket
 				socket.onopen = function(event) {
 					
-					// Send an initial message
-					//socket.send('I am the client and I\'m listening!');
-					
 					// Listen for messages
 					socket.onmessage = function(event) {
-						console.log('Client received a message',event);
-						console.log(event.data);
 						msg = JSON.parse(event.data);
 						Draw(msg.mouseX, msg.mouseY, true);
 					};
@@ -35,13 +30,9 @@
 						console.log('Client notified socket has closed',event);
 					};
 					
-					// To close the socket....
-					//socket.close()
-					
 				};
 
 				function sendMousePosition(msg){
-					console.log(msg);
 					socket.send(JSON.stringify(msg));
 				}
 			}
@@ -56,45 +47,6 @@
 			function InitThis() {
 			    ctx = document.getElementById('myCanvas').getContext("2d");
 			    Draw(300, 200, true);
-			    
-			 //    $('#myCanvas').mousedown(function (e) {
-			 //        mousePressed = true;
-
-			      
-		            
-			 //        mouseX = e.pageX - $(this).offset().left;
-		  //       	mouseY = e.pageY - $(this).offset().top;
-
-		  //       	lastX = mouseX;
-		  //       	lastY = mouseY;
-
-		  //       	Draw(mouseX, mouseY, true, penColor);
-		  //       	msg = {'mouseX':mouseX, 'mouseY':mouseY, 'penColor':penColor};
-		  //       	console.log(msg);
-		  //       	sendMousePosition(msg);
-			   		
-
-			 //    });
-
-			 //    $('#myCanvas').mousemove(function (e) {
-			 //        if (mousePressed) {
-			 //        	mouseX = e.pageX - $(this).offset().left;
-			 //        	mouseY = e.pageY - $(this).offset().top;
-			 //            Draw(mouseX, mouseY, true, penColor);
-			 //        	msg = {'mouseX':mouseX, 'mouseY':mouseY, 'penColor':penColor};
-			 //        	console.log(msg);
-			 //        	sendMousePosition(msg);
-			 //        }
-			 //    });
-
-			 //    $('#myCanvas').mouseup(function (e) {
-			 //        mousePressed = false;
-
-			 //    });
-				
-				// $('#myCanvas').mouseleave(function (e) {
-			 //        mousePressed = false;
-			 //    });
 			}
 
 			function Draw(x, y, isDown) {
@@ -125,26 +77,20 @@
 
                 if (oEvent.key == "Up"){
                 	y -=speed;
-                	// oTextbox.value += "\n>" + oEvent.type + " --- "+oEvent.key;
                 }
                 else if (oEvent.key == "Left"){
                 	x -=speed;
-                	// oTextbox.value += "\n>" + oEvent.type + " --- "+oEvent.key;
                 }
                 else if (oEvent.key == "Right"){
                 	x +=speed ;
-                	// oTextbox.value += "\n>" + oEvent.type + " --- "+oEvent.key;
                 }
                 else if (oEvent.key == "Down"){
                 	y +=speed;
-                	// oTextbox.value += "\n>" + oEvent.type + " --- "+oEvent.key;
                 }
                 
                 Draw(x, y, true);
             	msg = {'mouseX':x, 'mouseY':y};
 	        	sendMousePosition(msg);
-                
-                // console.log(oEvent);
             }
 
 
@@ -160,8 +106,5 @@
         <canvas id="myCanvas" width="800" height="300" style="border:2px solid black"></canvas>
     	
     	<P>Type some characters into the first textbox.</p>
-      
-        <!-- <P><textarea id="txt1" rows="15" cols="50"></textarea></p> -->
-
     </body>
 </html>

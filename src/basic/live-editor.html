@@ -1,0 +1,103 @@
+<html>
+    <head>
+        <title>Live Editor</title>
+        <link rel="stylesheet" href="http://localhost/ratchet-websocket-sample/assets/codemirror/lib/codemirror.css">
+		<script src="http://localhost/ratchet-websocket-sample/assets/codemirror/lib/codemirror.js"></script>
+		<script src="http://localhost/ratchet-websocket-sample/assets/codemirror/addon/mode/simple.js"></script>
+		<script src="http://localhost/ratchet-websocket-sample/assets/codemirror/mode/xml/xml.js"></script>
+        <script type="text/javascript" src="http://localhost/ratchet-websocket-sample/assets/js/jquery.min.js"></script>
+		<script type="text/javascript">
+			
+			if ("WebSocket" in window)
+			{
+
+				var socket = new WebSocket('ws://localhost:8080/live_editor');
+				
+				// Open the socket
+				socket.onopen = function(event) {
+					var list_users = [''];
+
+					// Listen for messages
+					socket.onmessage = function(event) {
+						console.log(event.data);
+					};
+					
+					// Listen for socket closes
+					socket.onclose = function(event) {
+						alert('socket is closed..');
+					};
+					
+				};
+
+				function sendHTMLCode(){
+					msg = editor.getValue();
+					socket.send(msg);
+				}
+			}
+			else
+			{
+				 // The browser doesn't support WebSocket
+				 alert("WebSocket NOT supported by your Browser!");
+			}
+
+		</script>
+        
+    </head>
+    <body>
+        <h1>Live Editor</h1>
+        <p>This is a simple HTML editor powered by PHP and RatchetWebSocket</p>
+        <div id="live-editor" style="width:1000px;height:200px;" onkeyup="sendHTMLCode();"></div> <br/><br/>
+    </body>
+
+    <script>
+    	CodeMirror.defineSimpleMode("simplemode", {
+		  // The start state contains the rules that are intially used
+		  start: [
+		    // The regex matches the token, the token property contains the type
+		    {regex: /"(?:[^\\]|\\.)*?"/, token: "string"},
+		    // You can match multiple tokens at once. Note that the captured
+		    // groups must span the whole string in this case
+		    {regex: /(function)(\s+)([a-z$][\w$]*)/,
+		     token: ["keyword", null, "variable-2"]},
+		    // Rules are matched in the order in which they appear, so there is
+		    // no ambiguity between this one and the one above
+		    {regex: /(?:function|var|return|if|for|while|else|do|this)\b/,
+		     token: "keyword"},
+		    {regex: /true|false|null|undefined/, token: "atom"},
+		    {regex: /0x[a-f\d]+|[-+]?(?:\.\d+|\d+\.?\d*)(?:e[-+]?\d+)?/i,
+		     token: "number"},
+		    {regex: /\/\/.*/, token: "comment"},
+		    {regex: /\/(?:[^\\]|\\.)*?\//, token: "variable-3"},
+		    // A next property will cause the mode to move to a different state
+		    {regex: /\/\*/, token: "comment", next: "comment"},
+		    {regex: /[-+\/*=<>!]+/, token: "operator"},
+		    // indent and dedent properties guide autoindentation
+		    {regex: /[\{\[\(]/, indent: true},
+		    {regex: /[\}\]\)]/, dedent: true},
+		    {regex: /[a-z$][\w$]*/, token: "variable"},
+		    // You can embed other modes with the mode property. This rule
+		    // causes all code between << and >> to be highlighted with the XML
+		    // mode.
+		    {regex: /<</, token: "meta", mode: {spec: "xml", end: />>/}}
+		  ],
+		  // The multi-line comment state.
+		  comment: [
+		    {regex: /.*?\*\//, token: "comment", next: "start"},
+		    {regex: /.*/, token: "comment"}
+		  ],
+		  // The meta property contains global information about the mode. It
+		  // can contain properties like lineComment, which are supported by
+		  // all modes, and also directives like dontIndentStates, which are
+		  // specific to simple modes.
+		  meta: {
+		    dontIndentStates: ["comment"],
+		    lineComment: "//"
+		  }
+		});
+	    var code = document.getElementById("live-editor");
+		var editor = CodeMirror(code, {
+		  value: "<h1>Hello World</h1>",
+		  mode: "simplemode"
+		});
+    </script>
+</html>
